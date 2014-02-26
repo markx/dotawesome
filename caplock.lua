@@ -1,40 +1,48 @@
 local wibox=require("wibox")
 local awful=require("awful")
 
-function init ()
+function caplock_update ()
     local fd = io.popen("xset -q")
     local state = fd:read("*a")
     fd:close()
-    state = string.match(state, "LED mask:%s+%d%d%d%d%d%d%d(%d)")
-    return state
+    caplock_state = string.match(state, "LED mask:%s+%d%d%d%d%d%d%d(%d)")
+    if caplock_state == "1" then
+	--the last state is "ON", so now it should be "OFF"
+	text = "|A|" 
+    elseif caplock_state == '0' then
+	text = "|a|" 
+    else
+	text= 'unknown'
+    end
+    caplock_widget:set_markup(text)
 
-end
+end 
 
-function caplock_update (widget)
+function caplock_toggle ()
 
     if caplock_state == "1" then
+	--the last state is "ON", so now it should be "OFF"
 	caplock_state='0'
-	text = "| A |" 
+	text = "|a|" 
     elseif caplock_state == '0' then
 	caplock_state='1'
-	text = "| a |" 
+	text = "|A|" 
     else
 	text= 'unknown'
     end
     --naughty.notify({title=caplock_state})
-    --caplock_widget:set_markup(text)
-    caplock_widget:set_text(text)
+    caplock_widget:set_markup(text)
+    --caplock_widget:set_text(text)
 end
 
---caplock_clock = timer({timeout = 30})
---volume_clock:connect_signal("timeout", function () caplock_update(caplock_widget)end )
---caplock_clock:start()
+caplock_clock = timer({timeout = 30})
+caplock_clock:connect_signal("timeout", function () caplock_update() end )
+caplock_clock:start()
 
 caplock_widget = wibox.widget.textbox()
-volume_widget:set_align("left")
-caplock_state=init()
-caplock_update(caplock_widget)
-
+caplock_widget:set_align("left")
+caplock_widget:set_font("Mono 10")
+caplock_update()
 
 
 
