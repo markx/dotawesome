@@ -41,7 +41,7 @@ caplock_clock:start()
 
 caplock_widget = wibox.widget.textbox()
 caplock_widget:set_align("left")
-caplock_widget:set_font("Mono 10")
+caplock_widget:set_font("DejaVuSansMono 11")
 caplock_update()
 
 
