@@ -2,11 +2,10 @@
 local wibox=require("wibox")
 local awful=require("awful")
 
-local volume_cardid  = 0
 local volume_channel = "Master"
 function volume (mode, widget)
   if mode == "update" then
-    local fd = io.popen("amixer -c " .. volume_cardid .. " -- sget " .. volume_channel)
+    local fd = io.popen("amixer -D pulse sget " .. volume_channel)
     local status = fd:read("*all")
     fd:close()
  
@@ -22,13 +21,13 @@ function volume (mode, widget)
     end
     volume_widget:set_markup(volume)
   elseif mode == "up" then
-    io.popen("amixer -q -c " .. volume_cardid .. " sset " .. volume_channel .. " 9%+"):read("*all")
+    io.popen("amixer -D pulse sset " .. volume_channel .. " 9%+"):read("*all")
     volume("update", widget)
   elseif mode == "down" then
-    io.popen("amixer -q -c " .. volume_cardid .. " sset " .. volume_channel .. " 9%-"):read("*all")
+    io.popen("amixer -D pulse sset " .. volume_channel .. " 9%-"):read("*all")
     volume("update", widget)
   else
-    io.popen("amixer -c " .. volume_cardid .. " sset " .. volume_channel .. " toggle"):read("*all")
+    io.popen("amixer -D pulse  sset " .. volume_channel .. " toggle"):read("*all")
     volume("update", widget)
   end
 end
